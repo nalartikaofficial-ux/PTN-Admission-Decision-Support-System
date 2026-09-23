@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PTN Admission Decision Support System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ==========================================================================
+       CSS STYLING (Merger style.css)
+       ========================================================================== */
+    :root {
+      --primary: #1e3a8a;
+      --primary-hover: #172554;
+      --secondary: #64748b;
+      --bg-main: #f8fafc;
+      --surface: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --target: #dc2626;
+      --realistis: #2563eb;
+      --mitigasi: #16a34a;
+      --radius: 8px;
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding-bottom: 40px;
+    }
+
+    .app-header {
+      background-color: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .brand h1 { font-size: 1.25rem; font-weight: 700; color: var(--primary); }
+    .brand-badge {
+      font-size: 0.75rem;
+      background-color: #dbeafe;
+      color: var(--primary);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 4px;
+    }
+    .header-actions { display: flex; gap: 8px; }
+
+    .main-layout {
+      max-width: 1200px;
+      margin: 24px auto;
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      background-color: #fafbfc;
+    }
+    .card-header h2 { font-size: 1rem; font-weight: 600; color: #1e293b; }
+    .card-body { padding: 20px; }
+
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: 0.875rem; font-weight: 500; color: #334155; }
+    .form-group label.required::after { content: " *"; color: var(--target); }
+    .form-group input, .form-group select {
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      background-color: #fff;
+      color: var(--text-main);
+      transition: border-color 0.15s ease;
+    }
+    .form-group input:focus, .form-group select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12);
+    }
+
+    .pathway-tabs {
+      display: flex;
+      gap: 8px;
+      border-bottom: 2px solid var(--border);
+      margin-top: 8px;
+    }
+    .tab-btn {
+      padding: 10px 18px;
+      border: none;
+      background: none;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.15s ease;
+    }
+    .tab-btn:hover { color: var(--primary); }
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom: 3px solid var(--primary);
+    }
+
+    .table-responsive { overflow-x: auto; margin-bottom: 12px; }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+    .data-table th, .data-table td {
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      text-align: left;
+    }
+    .data-table th { background-color: #f8fafc; font-weight: 600; color: #334155; }
+    .data-table input[type="number"], .data-table input[type="text"] {
+      padding: 6px 8px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 0.875rem;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s ease;
+    }
+    .btn-sm { padding: 5px 10px; font-size: 0.8rem; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #e2e8f0; color: #1e293b; }
+    .btn-secondary:hover { background: #cbd5e1; }
+    .btn-block { width: 100%; margin-top: 12px; padding: 12px; font-size: 0.95rem; }
+
+    .analytics-summary-box {
+      background: #f1f5f9;
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+    }
+
+    .status-banner {
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    .status-banner.error { background: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
+    .status-banner.success { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+    .status-banner.info { background: #e0f2fe; color: #075985; border: 1px solid #7dd3fc; }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+    }
+    .rec-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .rec-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 0.75rem;
+      color: #fff;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+    .badge-TARGET { background: var(--target); }
+    .badge-REALISTIS { background: var(--realistis); }
+    .badge-MITIGASI { background: var(--mitigasi); }
+
+    .app-footer {
+      max-width: 1200px;
+      margin: 24px auto 0;
+      padding: 0 16px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .hidden { display: none !important; }
+
+    @media print {
+      body { background: #fff; }
+      .app-header .header-actions, .pathway-tabs, .form-actions, .btn { display: none !important; }
+      .card { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <span class="brand-badge">DSS 2026</span>
+        <h1>PTN Admission Decision Support System</h1>
+      </div>
+      <div class="header-actions">
+        <button id="btn-load-draft" class="btn btn-secondary">Buka Draf</button>
+        <button id="btn-save-draft" class="btn btn-secondary">Simpan Draf</button>
+        <button id="btn-print" class="btn btn-primary">Cetak Laporan</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-layout">
+    <!-- Status & Feedback Banner -->
+    <div id="status-banner" class="status-banner hidden" role="alert"></div>
+
+    <!-- 1. Profil Siswa & Verifikasi Sekolah -->
+    <section class="card" aria-labelledby="heading-student">
+      <div class="card-header">
+        <h2 id="heading-student">1. Profil Siswa & Verifikasi Sekolah</h2>
+      </div>
+      <div class="card-body">
+        <form id="form-student" class="form-grid">
+          <div class="form-group">
+            <label for="nama" class="required">Nama Lengkap Siswa</label>
+            <input type="text" id="nama" name="nama" required placeholder="Sesuai NISN/KTP">
+          </div>
+          <div class="form-group">
+            <label for="nis">Nomor Induk Siswa (NIS)</label>
+            <input type="text" id="nis" name="nis" placeholder="Nomor registrasi">
+          </div>
+          <div class="form-group">
+            <label for="kelas" class="required">Kelas / Rombel</label>
+            <input type="text" id="kelas" name="kelas" required placeholder="Contoh: XII - MIPA 1">
+          </div>
+          <div class="form-group">
+            <label for="jurusan" class="required">Rumpun Jurusan</label>
+            <select id="jurusan" name="jurusan" required>
+              <option value="">Pilih Jurusan</option>
+              <option value="MIPA">MIPA / SAINTEK</option>
+              <option value="IPS">IPS / SOSHUM</option>
+              <option value="BAHASA">BAHASA</option>
+              <option value="UMUM">UMUM (Kurikulum Merdeka)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="ranking">Peringkat Eligible</label>
+            <input type="number" id="ranking" name="ranking" min="1" placeholder="Peringkat">
+          </div>
+          <div class="form-group">
+            <label for="total_siswa">Total Siswa Jurusan</label>
+            <input type="number" id="total_siswa" name="total_siswa" min="1" placeholder="Populasi angkatan">
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Navigasi Tab Jalur Seleksi -->
+    <nav class="pathway-tabs" aria-label="Jalur Seleksi">
+      <button class="tab-btn active" data-tab="tab-snbp">Jalur SNBP (Prestasi Rapor)</button>
+      <button class="tab-btn" data-tab="tab-snbt">Jalur SNBT (UTBK Multi-TO)</button>
+      <button class="tab-btn" data-tab="tab-mandiri">Jalur Seleksi Mandiri</button>
+    </nav>
+
+    <!-- Tab Content: SNBP -->
+    <section id="tab-snbp" class="tab-pane" aria-labelledby="heading-snbp">
+      <div class="card">
+        <div class="card-header flex-between">
+          <h2 id="heading-snbp">Catatan Nilai Rapor (Semester 1–5)</h2>
+          <button type="button" id="btn-add-mapel" class="btn btn-sm btn-secondary">+ Tambah Mapel</button>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="data-table" id="table-grades">
+              <thead>
+                <tr>
+                  <th style="min-width: 180px;">Mata Pelajaran</th>
+                  <th style="width: 80px;">Sem 1</th>
+                  <th style="width: 80px;">Sem 2</th>
+                  <th style="width: 80px;">Sem 3</th>
+                  <th style="width: 80px;">Sem 4</th>
+                  <th style="width: 80px;">Sem 5</th>
+                  <th style="width: 90px;">Rata-rata</th>
+                  <th style="width: 60px;">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-grades"></tbody>
+            </table>
+          </div>
+          <div class="analytics-summary-box" id="grades-summary">
+            <p>Rata-rata Keseluruhan: <strong id="summary-grand-avg">-</strong> | Status Tren Akademik: <strong id="summary-trend-status">Memerlukan Data</strong></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab Content: SNBT -->
+    <section id="tab-snbt" class="tab-pane hidden" aria-labelledby="heading-snbt">
+      <div class="card">
+        <div class="card-header">
+          <h2 id="heading-snbt">Evaluasi Subtes Try Out UTBK (Multi-TO)</h2>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="data-table" id="table-utbk">
+              <thead>
+                <tr>
+                  <th>Komponen Subtes</th>
+                  <th style="width: 110px;">TO 1</th>
+                  <th style="width: 110px;">TO 2</th>
+                  <th style="width: 110px;">TO 3</th>
+                  <th style="width: 100px;">Rata-rata</th>
+                  <th style="width: 100px;">Trajektori</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-utbk"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab Content: Mandiri -->
+    <section id="tab-mandiri" class="tab-pane hidden" aria-labelledby="heading-mandiri">
+      <div class="card">
+        <div class="card-header">
+          <h2 id="heading-mandiri">Skema & Konfigurasi Mandiri PTN</h2>
+        </div>
+        <div class="card-body">
+          <div id="mandiri-program-details" class="analytics-summary-box">
+            Pilih program studi sasaran terlebih dahulu untuk melihat parameter jalur Mandiri terkait.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Pilihan Sasaran & Analisis -->
+    <section class="card" aria-labelledby="heading-targets">
+      <div class="card-header">
+        <h2 id="heading-targets">2. Pilihan Program Studi & Analisis Rekomendasi</h2>
+      </div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="select-target-1" class="required">Pilihan 1 (Prioritas Utama)</label>
+            <select id="select-target-1" required>
+              <option value="">Memuat program studi...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="select-target-2">Pilihan 2 (Alternatif)</label>
+            <select id="select-target-2">
+              <option value="">Pilih Program Alternatif</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" id="btn-run-analysis" class="btn btn-primary btn-block">Jalankan Analisis Rekomendasi</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Hasil Rekomendasi Output -->
+    <section id="section-results" class="hidden" aria-labelledby="heading-results">
+      <div class="card">
+        <div class="card-header">
+          <h2 id="heading-results">Hasil Rekomendasi & Decision Support Matrix</h2>
+        </div>
+        <div class="card-body">
+          <div id="cards-recommendation-container" class="cards-grid"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p>PTN Admission DSS &copy; 2026. Analisis sistem merupakan instrumen pendukung keputusan berdasarkan data empiris yang tersedia dan bukan jaminan kelulusan mutlak.</p>
+  </footer>
+
+  <script>
+    /* ==========================================================================
+       JAVASCRIPT MERGER (state, api, validation, grades, snbt, mandiri, recommendation, storage, app)
+       ========================================================================== */
+
+    // 1. STATE MANAGEMENT (state.js)
+    const AppState = {
+      student: {
+        nama: "",
+        nis: "",
+        kelas: "",
+        jurusan: "",
+        ranking: null,
+        total_siswa: null
+      },
+      grades: [
+        { mapel: "Matematika (Wajib)", semester_1: null, semester_2: null, semester_3: null, semester_4: null, semester_5: null },
+        { mapel: "Bahasa Indonesia", semester_1: null, semester_2: null, semester_3: null, semester_4: null, semester_5: null },
+        { mapel: "Bahasa Inggris", semester_1: null, semester_2: null, semester_3: null, semester_4: null, semester_5: null },
+        { mapel: "Fisika", semester_1: null, semester_2: null, semester_3: null, semester_4: null, semester_5: null },
+        { mapel: "Kimia", semester_1: null, semester_2: null, semester_3: null, semester_4: null, semester_5: null },
+        { mapel: "Biologi", semester_1: null, semester_2: null, semester_3: null, semester_4: null, semester_5: null }
+      ],
+      subtests: [
+        "Penalaran Umum",
+        "Pemahaman Bacaan & Menulis",
+        "Pengetahuan & Pemahaman Umum",
+        "Pengetahuan Kuantitatif",
+        "Literasi Bahasa Indonesia",
+        "Literasi Bahasa Inggris",
+        "Penalaran Matematika"
+      ],
+      utbk: [],
+      programs: [],
+      selectedTarget1: null,
+      selectedTarget2: null,
+      recommendations: [],
+      activePathway: "SNBP"
+    };
+
+    // Inisialisasi struktur penyimpanan UTBK Multi-TO
+    AppState.utbk = AppState.subtests.map(st => ({
+      subtest: st,
+      to_1: null,
+      to_2: null,
+      to_3: null
+    }));
+
+    // 2. API SERVICE CLIENT (api.js)
+    const ApiService = {
+      // Masukkan URL Google Apps Script Web App Anda di sini:
+      BASE_URL: "https://script.google.com/macros/s/AKfycbz_SAMPLE_DEPLOYMENT_ID/exec",
+
+      get: async function(action, params = {}) {
+        const url = new URL(this.BASE_URL);
+        url.searchParams.append("action", action);
+        for (const [k, v] of Object.entries(params)) {
+          if (v !== undefined && v !== null) url.searchParams.append(k, v);
+        }
+
+        try {
+          const res = await fetch(url.toString(), { credentials: "omit" });
+          if (!res.ok) throw new Error(`HTTP error status: ${res.status}`);
+          const json = await res.json();
+          if (!json.success) throw new Error(json.message || "Gagal memproses request");
+          return json.data;
+        } catch (err) {
+          console.error(`API GET [${action}] Error:`, err);
+          throw err;
+        }
+      },
+
+      post: async function(action, payload = {}) {
+        const url = `${this.BASE_URL}?action=${encodeURIComponent(action)}`;
+        try {
+          const res = await fetch(url, {
+            method: "POST",
+            credentials: "omit",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(payload)
+          });
+          if (!res.ok) throw new Error(`HTTP error status: ${res.status}`);
+          const json = await res.json();
+          if (!json.success) {
+            const detailMsg = json.error && json.error.details ? json.error.details.join(", ") : "";
+            throw new Error(`${json.message} ${detailMsg}`);
+          }
+          return json.data;
+        } catch (err) {
+          console.error(`API POST [${action}] Error:`, err);
+          throw err;
+        }
+      }
+    };
+
+    // 3. VALIDATION SERVICE (validation.js)
+    const Validation = {
+      validateStudentProfile: function(student) {
+        const errors = [];
+        if (!student.nama || student.nama.trim() === "") errors.push("Nama siswa wajib diisi.");
+        if (!student.kelas || student.kelas.trim() === "") errors.push("Kelas wajib diisi.");
+        if (!student.jurusan || student.jurusan.trim() === "") errors.push("Rumpun jurusan wajib dipilih.");
+        
+        if (student.ranking) {
+          const r = Number(student.ranking);
+          const t = Number(student.total_siswa);
+          if (isNaN(r) || r < 1) errors.push("Peringkat harus bernilai angka positif.");
+          if (t && r > t) errors.push("Peringkat tidak boleh melebihi total siswa.");
+        }
+        return errors;
+      }
+    };
+
+    // 4. STORAGE SERVICE (storage.js)
+    const StorageModule = {
+      STORAGE_KEY: "m18_eduanalytics_draft",
+
+      saveDraft: function() {
+        const draft = {
+          student: {
+            nama: document.getElementById("nama").value,
+            nis: document.getElementById("nis").value,
+            kelas: document.getElementById("kelas").value,
+            jurusan: document.getElementById("jurusan").value,
+            ranking: document.getElementById("ranking").value,
+            total_siswa: document.getElementById("total_siswa").value
+          },
+          grades: AppState.grades,
+          utbk: AppState.utbk,
+          timestamp: new Date().toISOString()
+        };
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(draft));
+        return true;
+      },
+
+      loadDraft: function() {
+        const raw = localStorage.getItem(this.STORAGE_KEY);
+        if (!raw) return null;
+        try {
+          return JSON.parse(raw);
+        } catch (e) {
+          console.error("Gagal membaca local draft", e);
+          return null;
+        }
+      }
+    };
+
+    // 5. RAPOR GRADES MODULE (grades.js)
+    const GradesModule = {
+      render: function() {
+        const tbody = document.getElementById("tbody-grades");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+
+        AppState.grades.forEach((g, idx) => {
+          const tr = document.createElement("tr");
+          let semInputs = "";
+          for (let s = 1; s <= 5; s++) {
+            const val = g[`semester_${s}`] !== null ? g[`semester_${s}`] : "";
+            semInputs += `<td><input type="number" min="0" max="100" class="input-sem" data-idx="${idx}" data-sem="${s}" value="${val}" style="width: 100%;"></td>`;
+          }
+
+          tr.innerHTML = `
+            <td><input type="text" value="${g.mapel}" class="input-mapel" data-idx="${idx}" style="width: 100%;"></td>
+            ${semInputs}
+            <td id="avg-row-${idx}" style="font-weight: 600; text-align: center;">-</td>
+            <td style="text-align: center;"><button type="button" class="btn btn-sm btn-secondary btn-del-mapel" data-idx="${idx}">&times;</button></td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        this.recalculateGrandSummary();
+      },
+
+      recalculateGrandSummary: function() {
+        let grandSum = 0;
+        let grandCount = 0;
+        const semAverages = [];
+
+        // Rata-rata per semester untuk slope
+        for (let s = 1; s <= 5; s++) {
+          let sSum = 0, sCount = 0;
+          AppState.grades.forEach(g => {
+            const val = g[`semester_${s}`];
+            if (val !== null && val !== "" && !isNaN(val)) {
+              sSum += Number(val);
+              sCount++;
+            }
+          });
+          if (sCount > 0) {
+            semAverages.push({ x: s, y: sSum / sCount });
+          }
+        }
+
+        // Rata-rata per baris mata pelajaran
+        AppState.grades.forEach((g, idx) => {
+          let rSum = 0, rCount = 0;
+          for (let s = 1; s <= 5; s++) {
+            const val = g[`semester_${s}`];
+            if (val !== null && val !== "" && !isNaN(val)) {
+              rSum += Number(val);
+              rCount++;
+            }
+          }
+          const rAvg = rCount > 0 ? (rSum / rCount).toFixed(1) : "-";
+          const el = document.getElementById(`avg-row-${idx}`);
+          if (el) el.innerText = rAvg;
+
+          grandSum += rSum;
+          grandCount += rCount;
+        });
+
+        const grandAvg = grandCount > 0 ? (grandSum / grandCount).toFixed(2) : "-";
+        const elGrand = document.getElementById("summary-grand-avg");
+        if (elGrand) elGrand.innerText = grandAvg;
+
+        // Indikator status tren linear
+        const statusTrendEl = document.getElementById("summary-trend-status");
+        if (statusTrendEl) {
+          if (semAverages.length < 2) {
+            statusTrendEl.innerText = "Memerlukan Data (min. 2 semester)";
+            statusTrendEl.style.color = "var(--text-muted)";
+          } else {
+            const n = semAverages.length;
+            let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+            semAverages.forEach(p => {
+              sumX += p.x; sumY += p.y;
+              sumXY += p.x * p.y; sumXX += p.x * p.x;
+            });
+            const slope = ((n * sumXY) - (sumX * sumY)) / ((n * sumXX) - (sumX * sumX));
+            if (slope > 0.3) {
+              statusTrendEl.innerText = `Meningkat (+${slope.toFixed(2)})`;
+              statusTrendEl.style.color = "var(--mitigasi)";
+            } else if (slope < -0.3) {
+              statusTrendEl.innerText = `Menurun (${slope.toFixed(2)})`;
+              statusTrendEl.style.color = "var(--target)";
+            } else {
+              statusTrendEl.innerText = `Stabil (${slope.toFixed(2)})`;
+              statusTrendEl.style.color = "var(--realistis)";
+            }
+          }
+        }
+      }
+    };
+
+    // 6. SNBT MULTI-TO MODULE (snbt.js)
+    const SnbtModule = {
+      render: function() {
+        const tbody = document.getElementById("tbody-utbk");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+
+        AppState.utbk.forEach((u, idx) => {
+          const val1 = u.to_1 !== null ? u.to_1 : "";
+          const val2 = u.to_2 !== null ? u.to_2 : "";
+          const val3 = u.to_3 !== null ? u.to_3 : "";
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td><strong>${u.subtest}</strong></td>
+            <td><input type="number" min="0" max="1000" class="input-utbk" data-idx="${idx}" data-to="1" value="${val1}" placeholder="-" style="width: 100%;"></td>
+            <td><input type="number" min="0" max="1000" class="input-utbk" data-idx="${idx}" data-to="2" value="${val2}" placeholder="-" style="width: 100%;"></td>
+            <td><input type="number" min="0" max="1000" class="input-utbk" data-idx="${idx}" data-to="3" value="${val3}" placeholder="-" style="width: 100%;"></td>
+            <td id="utbk-avg-${idx}" style="font-weight: 600; text-align: center;">-</td>
+            <td id="utbk-traj-${idx}" style="text-align: center; font-size: 0.8rem;">-</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        this.recalculateUTBKSummary();
+      },
+
+      recalculateUTBKSummary: function() {
+        AppState.utbk.forEach((u, idx) => {
+          let sum = 0, count = 0;
+          const vals = [];
+          [u.to_1, u.to_2, u.to_3].forEach((v, toIdx) => {
+            if (v !== null && v !== "" && !isNaN(v)) {
+              sum += Number(v);
+              count++;
+              vals.push({ to: toIdx + 1, val: Number(v) });
+            }
+          });
+
+          const avgEl = document.getElementById(`utbk-avg-${idx}`);
+          const trajEl = document.getElementById(`utbk-traj-${idx}`);
+
+          if (avgEl) avgEl.innerText = count > 0 ? (sum / count).toFixed(1) : "-";
+          if (trajEl) {
+            if (vals.length >= 2) {
+              const diff = vals[vals.length - 1].val - vals[0].val;
+              if (diff > 15) {
+                trajEl.innerText = "IMPROVING";
+                trajEl.style.color = "var(--mitigasi)";
+              } else if (diff < -15) {
+                trajEl.innerText = "DECLINING";
+                trajEl.style.color = "var(--target)";
+              } else {
+                trajEl.innerText = "STABLE";
+                trajEl.style.color = "var(--realistis)";
+              }
+            } else {
+              trajEl.innerText = "-";
+              trajEl.style.color = "inherit";
+            }
+          }
+        });
+      }
+    };
+
+    // 7. MANDIRI MODULE (mandiri.js)
+    const MandiriModule = {
+      renderProgramMandiri: function(progData) {
+        const container = document.getElementById("mandiri-program-details");
+        if (!container) return;
+
+        if (!progData || !progData.mandiri) {
+          container.innerHTML = "<p>Data skema jalur Mandiri resmi untuk program ini belum tersedia pada database.</p>";
+          return;
+        }
+
+        const m = progData.mandiri;
+        container.innerHTML = `
+          <h4 style="margin-bottom: 6px; color: var(--primary);">Jalur Mandiri: ${m.jalur_mandiri || 'Reguler Mandiri'}</h4>
+          <p>Alokasi Kursi: <strong>${m.daya_tampung || '-'}</strong> | Total Peminat: <strong>${m.peminat || '-'}</strong></p>
+          <p>Bobot Rapor: <strong>${((m.bobot_akademik || 0) * 100)}%</strong> | Bobot Nilai Tes/UTBK: <strong>${((m.bobot_tes || 0) * 100)}%</strong></p>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">Sumber Acuan: <a href="${m.source_url || '#'}" target="_blank">${m.source_url || 'Internal'}</a> (${m.data_status || 'UNVERIFIED'})</p>
+        `;
+      }
+    };
+
+    // 8. RECOMMENDATION DISPLAY MODULE (recommendation.js)
+    const RecommendationModule = {
+      renderResults: function(recommendations) {
+        const sec = document.getElementById("section-results");
+        const container = document.getElementById("cards-recommendation-container");
+        if (!sec || !container) return;
+
+        container.innerHTML = "";
+        sec.classList.remove("hidden");
+
+        if (!recommendations || recommendations.length === 0) {
+          container.innerHTML = "<p>Tidak ada hasil rekomendasi yang dapat dihitung untuk data yang dipilih.</p>";
+          return;
+        }
+
+        recommendations.forEach(rec => {
+          const card = document.createElement("div");
+          card.className = "rec-card";
+
+          const reasons = JSON.parse(rec.reason || "[]");
+          const risks = JSON.parse(rec.risk_factors || "[]");
+          const strategies = JSON.parse(rec.strategy || "[]");
+
+          card.innerHTML = `
+            <span class="rec-badge badge-${rec.category}">${rec.category}</span>
+            <h3 style="font-size:1.15rem; margin-bottom:4px;">${rec.nama_prodi}</h3>
+            <p class="text-muted" style="font-size:0.875rem; margin-bottom:12px;">${rec.nama_ptn} &bull; Jalur ${rec.jalur}</p>
+
+            <div style="background:#f8fafc; padding:12px; border-radius:6px; margin-bottom:14px; font-size:0.875rem; border:1px solid var(--border);">
+              <p>Match Score: <strong>${rec.match_score} / 100</strong></p>
+              <p>Confidence: <strong>${rec.confidence}</strong> (Data Quality Index: ${rec.data_quality_score}%)</p>
+            </div>
+
+            <div style="font-size:0.85rem; margin-bottom:12px;">
+              <strong>Dasar Analisis Keputusan:</strong>
+              <ul style="padding-left:18px; margin-top:4px;">
+                ${reasons.map(r => `<li>${r}</li>`).join("")}
+              </ul>
+            </div>
+
+            ${risks.length > 0 ? `
+              <div style="font-size:0.85rem; margin-bottom:12px; color:#b91c1c;">
+                <strong>Faktor Risiko Kompetitif:</strong>
+                <ul style="padding-left:18px; margin-top:4px;">
+                  ${risks.map(rf => `<li>${rf}</li>`).join("")}
+                </ul>
+              </div>
+            ` : ''}
+
+            <div style="font-size:0.85rem; color:#15803d;">
+              <strong>Arahan Strategi Konselor:</strong>
+              <ul style="padding-left:18px; margin-top:4px;">
+                ${strategies.map(s => `<li>${s}</li>`).join("")}
+              </ul>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+
+        sec.scrollIntoView({ behavior: 'smooth' });
+      }
+    };
+
+    // 9. APP INITIALIZATION & EVENT WIRING (app.js)
+    function showStatus(msg, type = "info") {
+      const banner = document.getElementById("status-banner");
+      banner.innerText = msg;
+      banner.className = `status-banner ${type}`;
+      banner.classList.remove("hidden");
+      setTimeout(() => banner.classList.add("hidden"), 5000);
+    }
+
+    document.addEventListener("DOMContentLoaded", async function() {
+      // Inisialisasi tabel rapor dan UTBK
+      GradesModule.render();
+      SnbtModule.render();
+
+      // Tab Switching
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.addEventListener("click", function() {
+          document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+          document.querySelectorAll(".tab-pane").forEach(p => p.classList.add("hidden"));
+          
+          this.classList.add("active");
+          const targetPane = document.getElementById(this.dataset.tab);
+          if (targetPane) targetPane.classList.remove("hidden");
+
+          if (this.dataset.tab === "tab-snbp") AppState.activePathway = "SNBP";
+          if (this.dataset.tab === "tab-snbt") AppState.activePathway = "SNBT";
+          if (this.dataset.tab === "tab-mandiri") AppState.activePathway = "MANDIRI";
+        });
+      });
+
+      // Grade table input listeners
+      document.getElementById("tbody-grades").addEventListener("input", function(e) {
+        if (e.target.classList.contains("input-sem")) {
+          const idx = Number(e.target.dataset.idx);
+          const sem = Number(e.target.dataset.sem);
+          const val = e.target.value !== "" ? Number(e.target.value) : null;
+          AppState.grades[idx][`semester_${sem}`] = val;
+          GradesModule.recalculateGrandSummary();
+        } else if (e.target.classList.contains("input-mapel")) {
+          const idx = Number(e.target.dataset.idx);
+          AppState.grades[idx].mapel = e.target.value;
+        }
+      });
+
+      // Grade table delete button
+      document.getElementById("tbody-grades").addEventListener("click", function(e) {
+        if (e.target.classList.contains("btn-del-mapel")) {
+          const idx = Number(e.target.dataset.idx);
+          AppState.grades.splice(idx, 1);
+          GradesModule.render();
+        }
+      });
+
+      // Add mapel button
+      document.getElementById("btn-add-mapel").addEventListener("click", function() {
+        AppState.grades.push({
+          mapel: "Mata Pelajaran Baru",
+          semester_1: null,
+          semester_2: null,
+          semester_3: null,
+          semester_4: null,
+          semester_5: null
+        });
+        GradesModule.render();
+      });
+
+      // UTBK table input listener
+      document.getElementById("tbody-utbk").addEventListener("input", function(e) {
+        if (e.target.classList.contains("input-utbk")) {
+          const idx = Number(e.target.dataset.idx);
+          const toNum = Number(e.target.dataset.to);
+          const val = e.target.value !== "" ? Number(e.target.value) : null;
+          AppState.utbk[idx][`to_${toNum}`] = val;
+          SnbtModule.recalculateUTBKSummary();
+        }
+      });
+
+      // Load master prodi ke dropdown
+      async function loadPrograms() {
+        try {
+          const programs = await ApiService.get("getPrograms");
+          AppState.programs = programs;
+          const sel1 = document.getElementById("select-target-1");
+          const sel2 = document.getElementById("select-target-2");
+
+          sel1.innerHTML = '<option value="">Pilih Program Sasaran 1</option>';
+          sel2.innerHTML = '<option value="">Pilih Program Alternatif 2</option>';
+
+          programs.forEach(p => {
+            const opt = `<option value="${p.program_id}">${p.nama_ptn} - ${p.nama_prodi} (${p.jenjang})</option>`;
+            sel1.insertAdjacentHTML("beforeend", opt);
+            sel2.insertAdjacentHTML("beforeend", opt);
+          });
+        } catch (e) {
+          showStatus("Gagal memuat daftar program studi dari database. Pastikan BASE_URL valid.", "error");
+        }
+      }
+
+      // Handler perubahan pilihan target prodi 1 untuk tab Mandiri
+      document.getElementById("select-target-1").addEventListener("change", function(e) {
+        const prog = AppState.programs.find(p => p.program_id === e.target.value);
+        MandiriModule.renderProgramMandiri(prog);
+      });
+
+      // Eksekusi Analisis Rekomendasi
+      document.getElementById("btn-run-analysis").addEventListener("click", async function() {
+        const studentData = {
+          nama: document.getElementById("nama").value.trim(),
+          nis: document.getElementById("nis").value.trim(),
+          kelas: document.getElementById("kelas").value.trim(),
+          jurusan: document.getElementById("jurusan").value,
+          ranking: document.getElementById("ranking").value || null,
+          total_siswa: document.getElementById("total_siswa").value || null
+        };
+
+        const errors = Validation.validateStudentProfile(studentData);
+        if (errors.length > 0) {
+          showStatus(errors.join(" "), "error");
+          return;
+        }
+
+        const t1 = document.getElementById("select-target-1").value;
+        const t2 = document.getElementById("select-target-2").value;
+        if (!t1) {
+          showStatus("Pilihan program studi sasaran 1 wajib dipilih.", "error");
+          return;
+        }
+
+        const targetIds = [t1];
+        if (t2) targetIds.push(t2);
+
+        try {
+          showStatus("Menyimpan data dan memproses analisis keputusan...", "info");
+          
+          // 1. Simpan/Update data siswa
+          const savedStudent = await ApiService.post("saveStudent", { student: studentData });
+          AppState.student.student_id = savedStudent.student_id;
+
+          // 2. Simpan nilai rapor
+          await ApiService.post("saveGrades", {
+            student_id: savedStudent.student_id,
+            grades: AppState.grades
+          });
+
+          // 3. Evaluasi rekomendasi sesuai jalur aktif
+          let recs = [];
+          if (AppState.activePathway === "SNBP") {
+            recs = await ApiService.post("evaluateSNBP", {
+              student_id: savedStudent.student_id,
+              target_program_ids: targetIds
+            });
+          } else if (AppState.activePathway === "SNBT") {
+            // Hitung rata-rata komposit per TO
+            const toPayload = [1, 2, 3].map(toNum => {
+              let sum = 0, count = 0;
+              AppState.utbk.forEach(u => {
+                const val = u[`to_${toNum}`];
+                if (val !== null && val !== "" && !isNaN(val)) {
+                  sum += Number(val);
+                  count++;
+                }
+              });
+              return {
+                tryout_number: toNum,
+                total_score: count > 0 ? (sum / count) : 0
+              };
+            });
+
+            await ApiService.post("saveUTBK", {
+              student_id: savedStudent.student_id,
+              utbk: toPayload
+            });
+
+            recs = await ApiService.post("evaluateSNBT", {
+              student_id: savedStudent.student_id,
+              target_program_ids: targetIds
+            });
+          } else if (AppState.activePathway === "MANDIRI") {
+            // Menggunakan evaluasi acuan SNBT/Rapor terbobot
+            recs = await ApiService.post("evaluateSNBT", {
+              student_id: savedStudent.student_id,
+              target_program_ids: targetIds
+            });
+          }
+
+          RecommendationModule.renderResults(recs);
+          showStatus("Analisis rekomendasi berhasil diproses.", "success");
+        } catch (err) {
+          showStatus(err.message, "error");
+        }
+      });
+
+      // Draft Save & Load
+      document.getElementById("btn-save-draft").addEventListener("click", () => {
+        StorageModule.saveDraft();
+        showStatus("Draf formulir tersimpan lokal di peramban ini.", "success");
+      });
+
+      document.getElementById("btn-load-draft").addEventListener("click", () => {
+        const draft = StorageModule.loadDraft();
+        if (!draft) {
+          showStatus("Tidak ada rekaman draf lokal yang ditemukan.", "error");
+          return;
+        }
+        document.getElementById("nama").value = draft.student.nama || "";
+        document.getElementById("nis").value = draft.student.nis || "";
+        document.getElementById("kelas").value = draft.student.kelas || "";
+        document.getElementById("jurusan").value = draft.student.jurusan || "";
+        document.getElementById("ranking").value = draft.student.ranking || "";
+        document.getElementById("total_siswa").value = draft.student.total_siswa || "";
+
+        if (Array.isArray(draft.grades) && draft.grades.length > 0) {
+          AppState.grades = draft.grades;
+          GradesModule.render();
+        }
+        if (Array.isArray(draft.utbk) && draft.utbk.length > 0) {
+          AppState.utbk = draft.utbk;
+          SnbtModule.render();
+        }
+        showStatus("Draf lokal berhasil dimuat.", "success");
+      });
+
+      // Print Report
+      document.getElementById("btn-print").addEventListener("click", () => window.print());
+
+      // Panggil loader prodi awal
+      loadPrograms();
+    });
+  </script>
+</body>
+</html>
